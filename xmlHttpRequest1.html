@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>XMLHttpRequest #01</title>
+    <link rel="stylesheet" href="css/estilo.css" />
+  </head>
+
+  <body class="conteudo exercicio">
+    <h1>Estados</h1>
+
+    <script>
+      function criarTabela(estados) {
+        const linhas = estados.map((e) => {
+          const tdId = document.createElement("td");
+          tdId.innerHTML = e.id;
+          const tdNome = document.createElement("td");
+          tdNome.innerHTML = e.nome;
+          const tdSigla = document.createElement("td");
+          tdSigla.innerHTML = e.sigla;
+
+          const trLinha = document.createElement("tr");
+          trLinha.appendChild(tdId);
+          trLinha.appendChild(tdNome);
+          trLinha.appendChild(tdSigla);
+          return trLinha;
+        });
+        const tabela = document.createElement("table");
+        linhas.forEach((e) => tabela.appendChild(e));
+        document.body.appendChild(tabela);
+      }
+
+      function ajax(config) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", config.url, true);
+
+        xhr.onload = (e) => {
+          if (xhr.status == 200) {
+            config.sucesso(xhr.response);
+          } else if (xhr.status >= 400) {
+            config.erro({
+              code: xhr.status,
+              text: xhr.statusText,
+            });
+          }
+        };
+        xhr.send();
+      }
+
+      ajax({
+        url: "dados/estados.json",
+        metodo: "get",
+        sucesso(resposta) {
+          const estados = JSON.parse(resposta);
+          criarTabela(estados);
+        },
+        erro(e) {
+          const msg = document.createTextNode(`${e.code}: ${e.text}`);
+          document.body.appendChild(msg);
+        },
+      });
+    </script>
+  </body>
+</html>
